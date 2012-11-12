@@ -2,6 +2,7 @@ duff/static/admin/
 duff/static/css/
 duff/static/img/
 duff/static/js/
+log/*.log
 .*.sw?
 *.pyc
 *.vim

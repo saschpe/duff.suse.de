@@ -146,6 +146,11 @@ INSTALLED_APPS = (
     'duff.virtual',
 )
 
+if DEBUG:
+    LOG_FILE_NAME = "development.log"
+else:
+    LOG_FILE_NAME = "production.log"
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -159,7 +164,30 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugFalse'
         }
     },
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s %(module)s %(process)d %(thread)d: %(message)s',
+        },
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s: %(message)s',
+        },
+    },
     'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.WatchedFileHandler',
+            'formatter': 'simple',
+            'filename': path.join(path.curdir, 'log', LOG_FILE_NAME),
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
@@ -168,9 +196,16 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['mail_admins', 'file'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        # For performance reasons, SQL logging is only enabled when
+        # settings.DEBUG is set to True, regardless of the logging level
+        # or handlers that are installed.
+        'django.db.backends': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
         },
     }
 }
