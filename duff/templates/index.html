@@ -1,37 +1,27 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>duff.suse.de</title>
-    <meta name="author" content="Sascha Peilicke"/>
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <h1>Welcome to duff.suse.de!</h1>
-    <p>Get forwarded to various virtual machines (libvirt domains)</p>
-    <table border=1>
-      <thead>
-        <tr>
-          <th>Domain</th>
-          <th>State</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for domain in domains %}
-        <tr id="domain_{{ domain.id}}">
-          <td>{{ domain.name }}</td>
-          <td>{{ domain.get_state_display }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <footer>
-      <ul>
-        <li>Questions: <a href="mailto:saschpe@suse.de">saschpe@suse.de</a></li>
-        <li>And yes, the hostname is inspired by <a href="https://en.wikipedia.org/wiki/Duff_Beer">Duff Beer</a></li>
-      </ul>
-    </footer>
-  </body>
-</html>
+{% extends 'base.html' %}
 
+{% block content %}
+  <!--<div class="hero-unit">
+    <h1>Welcome to duff.suse.de!</h1>
+  </div>-->
+  <div class="row">
+    <div class="span12">
+      <p>Get forwarded to various virtual machines (libvirt domains)</p>
+      <table border=1>
+        <thead>
+          <tr>
+            <th>Domain</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for domain in domains %}
+          <tr id="domain_{{ domain.id}}">
+            <td>{{ domain.name }}</td>
+            <td>{{ domain.get_state_display }}</td>
+          </tr>
+          {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}
