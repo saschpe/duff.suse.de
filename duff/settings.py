@@ -113,6 +113,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Debug Toolbar middleware must come after any other middleware that
+    # encodes the response's content (such as GZipMiddleware).
+    # Note: Be aware of middleware ordering and other middleware that may
+    # intercept requests and return responses. Putting the debug toolbar
+    # middleware after the Flatpage middleware, for example, means the toolbar
+    # will not show up on flatpages.
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'duff.urls'
@@ -140,6 +148,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 
     # 3rd-party apps:
+    'debug_toolbar',
     'south',
 
     # Local apps:
@@ -208,4 +217,19 @@ LOGGING = {
             'level': 'DEBUG',
         },
     }
+}
+
+
+# Debug toolbar settings:
+INTERNAL_IPS = ('127.0.0.1', '10.120.4.195')
+
+#def custom_show_toolbar(request):
+# return True # Always show toolbar, for example purposes only.
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+    # 'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
+    # 'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
+    # 'HIDE_DJANGO_SQL': False,
+    # 'ENABLE_STACKTRACES' : False,
 }
