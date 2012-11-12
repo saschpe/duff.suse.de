@@ -83,8 +83,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    path.abspath('3rd-party/bootstrap'),
-    path.abspath('3rd-party/jquery')
+    path.abspath('3rd-party/static/bootstrap'),
+    path.abspath('3rd-party/static/jquery')
 )
 
 # List of finder classes that know how to find static files in
@@ -102,7 +102,7 @@ SECRET_KEY = 's##8my+#s9e9rz(sn#!l51=9cibd$o9#2448qxe_*nhxwsh7fv'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
