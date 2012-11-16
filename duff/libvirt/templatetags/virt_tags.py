@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from django import template
 
-from ..models import Domain, Service
+from ..models import Domain
 
 
 register = template.Library()
@@ -19,12 +21,8 @@ def domain_state_color(state):
         return "info"
 
 @register.filter
-def service_state_color(state):
-    """Returns Bootstrap-compatible contextual color CSS class from Service state.
-    """
-    if state == Service.OFFLINE:
-        return "error"
-    elif state == Service.ONLINE:
+def network_state_color(state):
+    if state:
         return "success"
     else:
-        return "info"
+        return "warning"

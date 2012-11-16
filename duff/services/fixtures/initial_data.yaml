@@ -1,0 +1,56 @@
+- model: services.service
+  pk: 1
+  fields:
+    name: crowbar
+    description: Dell Crowbar
+    port: 3000
+    protocol: http
+- model: services.service
+  pk: 2
+  fields:
+    name: openstack-horizon
+    description: OpenStack Dashboard (Horizon)
+    port: 80
+    protocol: http
+- model: services.service
+  pk: 3
+  fields:
+    name: openstack-horizon
+    description: OpenStack Dashboard (Horizon) SSL
+    port: 443
+    protocol: https
+- model: services.service
+  pk: 4
+  fields:
+    name: couchdb
+    description: CouchDB
+    port: 5984
+    protocol: http
+- model: services.service
+  pk: 5
+  fields:
+    name: chef-webui
+    description: Chef Webui
+    port: 4040
+    protocol: http
+- model: services.service
+  pk: 6
+  fields:
+    name: obs-api
+    description: Open Build Service API
+    port: 443
+    protocol: https
+- model: services.service
+  pk: 6
+  fields:
+    name: obs-webui
+    description: Open Build Service WebUI
+    port: 80
+    protocol: http
+- model: services.service
+  pk: 7
+  fields:
+    name: obs-srcserver
+    description: Open Build Service Source Server
+    port: 5352
+    protocol: http

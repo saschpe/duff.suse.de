@@ -27,12 +27,18 @@
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
   </head>
+  {% block body %}
   <body>
     <div class="container">
-      <div class="masthead">
-        <ul class="nav nav-pills pull-right">
-          <li class="active"><a href="#">Home</a></li>
-        </ul>
+      <div class="navbar">
+        <div class="navbar-inner pull-right">
+          <ul class="nav">
+            <li class="active"><a href="#">Virtual Machines</a></li>
+            <li><a href="#">Firewall</a></li>
+            <li class="divider-vertical"></li>
+            <li><a href="{% url admin:index %}">Admin</a></li>
+          </ul>
+        </div>
         <h3 class="muted">duff.suse.de</h3>
       </div>
 
@@ -49,5 +55,6 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <!-- <script src="{% static 'js/base.js' %}"></script> -->
   </body>
+  {% endblock %}
 </html>
 

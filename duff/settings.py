@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for duff project.
 
 from os import environ, path
@@ -152,7 +153,9 @@ INSTALLED_APPS = (
     'south',
 
     # Local apps:
-    'duff.virtual',
+    #'duff.iptables',
+    'duff.libvirt',
+    #'duff.services',
 )
 
 if DEBUG:
