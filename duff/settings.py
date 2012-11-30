@@ -232,12 +232,8 @@ LOGGING = {
 # Debug toolbar settings:
 INTERNAL_IPS = ('127.0.0.1', '10.120.4.195', '10.123.0.74')
 
-#def custom_show_toolbar(request):
-# return True # Always show toolbar, for example purposes only.
-
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
-    # 'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     # 'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
     # 'HIDE_DJANGO_SQL': False,
     # 'ENABLE_STACKTRACES' : False,
