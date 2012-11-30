@@ -9,6 +9,8 @@ Install
 
 TDB.
 
+Requires libvirt-python-1.0.0 or greater
+
 
 License
 -------
