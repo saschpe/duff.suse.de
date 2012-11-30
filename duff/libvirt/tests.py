@@ -37,7 +37,7 @@ class DomainManagerTest(TestCase):
         self.vir_domain = vir_domain
 
     def test_creating_new_domains(self):
-        self.domain = Domain.objects.create(self.vir_domain)
+        self.domain = Domain.objects.create_from_vir_domain(self.vir_domain)
 
         self.assertEquals(self.domain.name, "test_domain")
         self.assertEquals(self.domain.state, 1)
@@ -48,7 +48,7 @@ class DomainManagerTest(TestCase):
         vir_domain = self.vir_domain
         vir_domain.info.return_value = [2, 2097152, 2097152, 1, 10]
 
-        updated_domain = Domain.objects.update_or_create(vir_domain)
+        updated_domain = Domain.objects.update_or_create_from_vir_domain(vir_domain)
 
         self.assertEquals(updated_domain.state, 2)
         self.assertEquals(updated_domain.memory, 2097152)
@@ -66,6 +66,9 @@ class DomainManagerTest(TestCase):
 
 
 class ServiceModelTest(TestCase):
+    def setUp(self):
+        Service.objects.all().delete() # Drop fixtures
+
     def test_creating_new_services(self):
         service = Service()
         service.name = "test"
@@ -87,7 +90,7 @@ class ServiceModelTest(TestCase):
 class AllocationModelTest(TestCase):
     def setUp(self):
         self.domain = Domain.objects.create(name="my_domain")
-        self.service = Service.objects.create(name="my_service")
+        self.service = Service.objects.create(name="my_service", port=42)
 
     def test_allocating_a_service_for_a_domain(self):
         allocation = Allocation()

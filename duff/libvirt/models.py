@@ -10,28 +10,28 @@ from lxml import etree
 class DomainManager(models.Manager):
     """Custom Domain model manager.
     """
-    def create(self, vir_domain):
+    def create_from_vir_domain(self, vir_domain):
         domain = Domain()
         domain.update(vir_domain)
         return domain
 
-    def update_or_create(self, vir_domain):
+    def update_or_create_from_vir_domain(self, vir_domain):
         try:
             domain = Domain.objects.get(name=vir_domain.name())
             domain.update(vir_domain)
         except Domain.DoesNotExist:
-            domain = self.create(vir_domain)
+            domain = self.create_from_vir_domain(vir_domain)
         return domain
 
-    def update_or_create_all(self, libvirt_connection):
+    def update_or_create_all_from_libvirt(self, libvirt_connection):
         # Iterate over active domains:
         for domain_id in libvirt_connection.listDomainsID():
             vir_domain = libvirt_connection.lookupByID(domain_id)
-            self.update_or_create(vir_domain)
+            self.update_or_create_from_vir_domain(vir_domain)
         # Iterate over defined domains:
         for domain_name in libvirt_connection.listDefinedDomains():
             vir_domain = libvirt_connection.lookupByName(domain_name)
-            self.update_or_create(vir_domain)
+            self.update_or_create_from_vir_domain(vir_domain)
 
 
 class Domain(models.Model):
@@ -115,28 +115,28 @@ class Interface(models.Model):
 class NetworkManager(models.Manager):
     """Custom Network model manager.
     """
-    def create(self, vir_network):
+    def create_from_vir_network(self, vir_network):
         network = Network()
         network.update(vir_network)
         return network
 
-    def update_or_create(self, vir_network):
+    def update_or_create_from_vir_network(self, vir_network):
         try:
             network = Network.objects.get(name=vir_network.name())
             network.update(vir_network)
         except Network.DoesNotExist:
-            network = self.create(vir_network)
+            network = self.create_from_vir_network(vir_network)
         return network
 
-    def update_or_create_all(self, libvirt_connection):
+    def update_or_create_all_from_libvirt(self, libvirt_connection):
         # Iterate over active networks:
         for network_name in libvirt_connection.listNetworks():
             vir_network = libvirt_connection.networkLookupByName(network_name)
-            self.update_or_create(vir_network)
+            self.update_or_create_from_vir_network(vir_network)
         # Iterate over defined networks:
         for network_name in libvirt_connection.listDefinedNetworks():
             vir_network = libvirt_connection.networkLookupByName(network_name)
-            self.update_or_create(vir_network)
+            self.update_or_create_from_vir_network(vir_network)
 
 
 class Network(models.Model):

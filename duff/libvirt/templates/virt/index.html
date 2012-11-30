@@ -19,13 +19,13 @@
         </thead>
         <tbody>
         {% for domain in domains %}
-          {% with allocation_count=domain.allocation_set.count %}
-            {% if allocation_count > 0 %}
-              {% for allocation in domain.allocation_set.all %}
+          {% with allocations=domain.allocation_set.all %}
+            {% if allocations|length > 0 %}
+              {% for allocation in allocations %}
                 <tr>
                   {% if forloop.first %}
-                    <td rowspan="{{ allocation_count }}">{% include "virt/domain/name.html" %}</td>
-                    <td rowspan="{{ allocation_count }}">{% include "virt/domain/state.html" %}</td>
+                    <td rowspan="{{ allocations|length }}">{% include "virt/domain/name.html" %}</td>
+                    <td rowspan="{{ allocations|length }}">{% include "virt/domain/state.html" %}</td>
                   {% endif %}
                   <td>{% include "virt/allocation/service_link.html" %}</td>
                   <td>{% include "virt/allocation/state.html" %}</td>

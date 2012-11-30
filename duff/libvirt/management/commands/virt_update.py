@@ -17,6 +17,6 @@ class Command(BaseCommand):
             uri = "qemu:///system"
 
         conn = libvirt.openReadOnly(uri)
-        Domain.objects.update_or_create_all(conn)
-        Network.objects.update_or_create_all(conn)
+        Domain.objects.update_or_create_all_from_libvirt(conn)
+        Network.objects.update_or_create_all_from_libvirt(conn)
         conn.close()
