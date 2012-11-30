@@ -6,8 +6,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from lxml import etree
 
-#from duff.services.models import Service
-
 
 class DomainManager(models.Manager):
     """Custom Domain model manager.
@@ -66,13 +64,13 @@ class Domain(models.Model):
     memory = models.PositiveIntegerField(default=2097152)
     vcpus = models.PositiveIntegerField(default=1, verbose_name="virtual CPUs", help_text="Should not exceed physical CPUs")
     cpu_time = models.BigIntegerField(default=0, verbose_name="CPU time")
-    networks = models.ManyToManyField("Network", through="Interface")
-    #services = models.ManyToManyField("Service", through="Allocation")
+    network_set = models.ManyToManyField("Network", through="Interface")
+    service_set = models.ManyToManyField("Service", through="Allocation")
 
     objects = DomainManager()
 
     class Meta:
-        ordering = ("id", "name",)
+        ordering = ("name",)
 
     def __unicode__(self):
         return self.name
@@ -87,6 +85,8 @@ class Domain(models.Model):
         self.name = vir_domain.name()
         if vir_domain.ID() is not -1:
             self.id = vir_domain.ID()
+        else:
+            self.id = None
         domain_info = vir_domain.info()
         self.state = domain_info[0]
         self.max_memory = domain_info[1]
@@ -174,3 +174,43 @@ class Network(models.Model):
         if save:
             self.save()
         
+
+class Service(models.Model):
+    """Web service provided by virtual machine (libvirt domain).
+    """
+    HTTP = 0
+    HTTPS = 1
+
+    PROTOCOL_CHOICES = (
+        (HTTP, "HTTP"),
+        (HTTPS, "HTTPS"),
+      )
+
+    name = models.CharField(max_length=128)
+    description = models.TextField()
+    port = models.PositiveIntegerField(verbose_name="Default Port")
+    protocol = models.PositiveIntegerField(choices=PROTOCOL_CHOICES, default=HTTP)
+
+    class Meta:
+        ordering = ("port", "name")
+
+    def __unicode__(self):
+        return self.name
+
+
+class Allocation(models.Model):
+    """Many-to-many relation between domains (virtual machines) and services.
+    """
+    domain = models.ForeignKey(Domain)
+    service = models.ForeignKey(Service)
+    running = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ("domain", "service")
+
+    def __unicode__(self):
+        return u"{0} {1}".format(self.domain, self.service)
+
+    def get_service_url(self):
+        #TODO: Use domain.ip_address here:
+        return u"{0}://{1}:{2}/".format(service.get_protocol_display().lower(), "192.168.0.1", service.port)

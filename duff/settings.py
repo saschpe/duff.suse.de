@@ -73,7 +73,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = path.abspath('duff/static')
+STATIC_ROOT = path.abspath('static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -100,11 +100,18 @@ STATICFILES_FINDERS = (
 SECRET_KEY = 's##8my+#s9e9rz(sn#!l51=9cibd$o9#2448qxe_*nhxwsh7fv'
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    # 'django.template.loaders.eggs.Loader',
-)
+if DEBUG:
+    TEMPLATE_LOADERS = (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )
+else:
+    TEMPLATE_LOADERS = (
+        ('django.template.loaders.cached.Loader', (
+            'django.template.loaders.filesystem.Loader',
+             'django.template.loaders.app_directories.Loader',
+        )),
+    )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -155,7 +162,6 @@ INSTALLED_APPS = (
     # Local apps:
     #'duff.iptables',
     'duff.libvirt',
-    #'duff.services',
 )
 
 if DEBUG:
@@ -224,7 +230,7 @@ LOGGING = {
 
 
 # Debug toolbar settings:
-INTERNAL_IPS = ('127.0.0.1', '10.120.4.195')
+INTERNAL_IPS = ('127.0.0.1', '10.120.4.195', '10.123.0.74')
 
 #def custom_show_toolbar(request):
 # return True # Always show toolbar, for example purposes only.

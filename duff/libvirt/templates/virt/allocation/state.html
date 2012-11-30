@@ -1,0 +1,2 @@
+{% load virt_tags %}
+<span class="label label-{{ allocation.running|allocation_running_color }}">{{ allocation.running|yesno|capfirst }}</span>

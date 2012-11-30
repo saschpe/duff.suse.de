@@ -2,7 +2,7 @@
 
 from django import template
 
-from ..models import Domain
+from ..models import Domain, Service
 
 
 register = template.Library()
@@ -26,3 +26,23 @@ def network_state_color(state):
         return "success"
     else:
         return "warning"
+
+@register.filter
+def allocation_running_color(running):
+    """Returns Bootstrap-compatible contextual color CSS class from Allocation running state.
+    """
+    if running:
+        return "success"
+    else:
+        return "important"
+
+@register.filter
+def memsizeformat(size):
+    """Returns memory size in human readable (rounded) form.
+    """
+    if size > 1048576: # 1024**2
+      return "{0} GB".format(size / 1048576)
+    elif size > 1024:
+      return "{0} MB".format(size / 1024)
+    else:
+      return "{0} KB".format(size)

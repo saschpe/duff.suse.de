@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load staticfiles virt_tags %}
+
+{% block title %}Virtual Machines / (Web) Services{% endblock %}
+
+{% block content %}
+  <p>This server runs a variety of virtual machines, have a look at the provided services:</p>
+  <div class="row">
+    <div class="span12">
+      <h3>Virtual Machines / (Web) Services</h3>
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th>Domain</th>
+            <th>State</th>
+            <th>Service</th>
+            <th>Available</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for domain in domains %}
+          {% with allocation_count=domain.allocation_set.count %}
+            {% if allocation_count > 0 %}
+              {% for allocation in domain.allocation_set.all %}
+                <tr>
+                  {% if forloop.first %}
+                    <td rowspan="{{ allocation_count }}">{% include "virt/domain/name.html" %}</td>
+                    <td rowspan="{{ allocation_count }}">{% include "virt/domain/state.html" %}</td>
+                  {% endif %}
+                  <td>{% include "virt/allocation/service_link.html" %}</td>
+                  <td>{% include "virt/allocation/state.html" %}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td>{% include "virt/domain/name.html" %}</td>
+                <td>{% include "virt/domain/state.html" %}</td>
+                <td>-</td>
+                <td></td>
+              </tr>
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <!-- <div class="span4">
+      <h3>Interfaces</h3>
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>Domain</th>
+            <th>Network</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div> -->
+    <div class="span4">
+      <h3>Virtual Networks</h3>
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th>Network</th>
+            <th>Active</th>
+            <th>Persistent</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for network in networks %}
+            <tr>
+              <td><span rel="tooltip" title="Bridge: {{ network.bridge_name }}, Forward mode: {{ network.forward_mode }}, Domain: {{ network.domain_name }}">{{ network.name }}</span></td>
+              <td><span class="label label-{{ network.active|network_state_color }}">{{ network.active|yesno|capfirst }}</span></td>
+              <td><span class="label label-{{ network.persistent|network_state_color }}">{{ network.persistent|yesno|capfirst }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- <div class="span4">
+      <h3>Storage</h3>
+      <p>TODO</p>
+    </div> -->
+  </div>
+{% endblock %}
+
+{% block js %}<script src="{% static 'js/virt.js' %}"></script>{% endblock %}

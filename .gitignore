@@ -1,10 +1,7 @@
-duff/static/admin/
-duff/static/css/
-duff/static/img/
-duff/static/js/
+static
 log/*.log
+.tox
 .*.sw?
+*.egg-info
 *.pyc
 *.vim
-.tox
-*.egg-info

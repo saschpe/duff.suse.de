@@ -11,6 +11,5 @@ urlpatterns = patterns("",
     url(r"^admin/doc/", include("django.contrib.admindocs.urls")),
     url(r"^admin/", include(admin.site.urls)),
     #url(r"^iptables/", include("duff.iptables.urls"),
-    url(r"^libvirt/", include("duff.libvirt.urls")),
-    #url(r"^services/", include("duff.services.urls"),
+    url(r"^virt/", include("duff.libvirt.urls")),
 )

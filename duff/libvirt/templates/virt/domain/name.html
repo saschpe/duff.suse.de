@@ -1,0 +1,2 @@
+{% load virt_tags %}
+<span rel="tooltip" title="Memory: {{ domain.memory|memsizeformat }}, VCPUs: {{ domain.vcpus }}">{{ domain.name }}</span>

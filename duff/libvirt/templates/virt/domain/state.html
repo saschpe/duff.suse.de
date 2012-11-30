@@ -1,0 +1,2 @@
+{% load virt_tags %}
+<span class="label label-{{ domain.state|domain_state_color }}">{{ domain.get_state_display }}</span>
