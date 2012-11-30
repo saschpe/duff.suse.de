@@ -13,6 +13,10 @@
 #    limitations under the License.
 
 import logging
+import re
+import socket
+import subprocess
+import urllib2
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -25,12 +29,18 @@ class DomainManager(models.Manager):
     def create_from_vir_domain(self, vir_domain):
         domain = Domain()
         domain.update(vir_domain)
+        if domain.state is Domain.RUNNING:
+            Interface.objects.update_all_for_domain_from_vir_domain(domain, vir_domain)
+            Allocation.objects.update_all_from_domain(domain)
         return domain
 
     def update_or_create_from_vir_domain(self, vir_domain):
         try:
             domain = Domain.objects.get(name=vir_domain.name())
             domain.update(vir_domain)
+            if domain.state is Domain.RUNNING:
+                Interface.objects.update_all_for_domain_from_vir_domain(domain, vir_domain)
+                Allocation.objects.update_all_from_domain(domain)
         except Domain.DoesNotExist:
             domain = self.create_from_vir_domain(vir_domain)
         return domain
@@ -109,6 +119,43 @@ class Domain(models.Model):
             self.save()
 
 
+class InterfaceManager(models.Manager):
+    """Custom Interface model manager.
+    """
+    def update_all_for_domain_from_vir_domain(self, domain, vir_domain):
+        # Parse network interfaces from XML description
+        domain.interface_set.all().delete()
+        xml = etree.fromstring(vir_domain.XMLDesc(0))
+        for xml_if in xml.findall("devices/interface[@type='network']"):
+            mac_address = xml_if.find("mac").attrib["address"].lower().strip()
+            network_name = xml_if.find("source").attrib["network"].lower().strip()
+            # Make sure there's a suitable Network instance available:
+            network = Network.objects.get_or_create(name=network_name)[0]
+
+            # libvirt provides no means to lookup domain ip addresses, thus:
+            # Check /etc/hosts:
+            ip_address = None
+            try:
+                ping_output = subprocess.check_output(["ping", "-c1", domain.name])
+                try:
+                    ip_address = re.search("\(((\d+\.){3}\d+)\)", ping_output).groups()[0]
+                except AttributeError:
+                    pass
+            except subprocess.CalledProcessError: 
+                # Try arp cache:
+                arp_output = subprocess.check_output(["arp", "-n"])
+                for line in arp_output.split("\n")[1:]:
+                    try:
+                        ip, mac = re.match("([\d\.]+)\s+\w+\s+([\d:]+)", line).groups()
+                        if mac is mac_address:
+                            ip_address = ip # Found it!
+                            break
+                    except AttributeError:
+                        pass
+            Interface.objects.create(domain=domain, network=network,
+                                     mac_address=mac_address, ip_address=ip_address)
+
+
 class Interface(models.Model):
     """Network interface, also a many-to-many relation between domains and networks.
     """
@@ -117,11 +164,13 @@ class Interface(models.Model):
     mac_address = models.CharField(max_length=17, verbose_name="MAC Address")
     ip_address = models.IPAddressField(blank=True, null=True, verbose_name="IP Address")
 
+    objects = InterfaceManager()
+
     class Meta:
       ordering = ("domain", "mac_address")
 
     def __unicode__(self):
-        return mac_address
+        return self.mac_address
 
 
 class NetworkManager(models.Manager):
@@ -210,6 +259,14 @@ class Service(models.Model):
         return self.name
 
 
+class AllocationManager(models.Manager):
+    """Custom Allocation model manager.
+    """
+    def update_all_from_domain(self, domain):
+        for allocation in domain.allocation_set.all():
+            allocation.update()
+
+
 class Allocation(models.Model):
     """Many-to-many relation between domains (virtual machines) and services.
     """
@@ -217,12 +274,32 @@ class Allocation(models.Model):
     service = models.ForeignKey(Service)
     running = models.BooleanField(default=False)
 
+    objects = AllocationManager()
+
     class Meta:
         ordering = ("domain", "service")
 
     def __unicode__(self):
         return u"{0} {1}".format(self.domain, self.service)
 
-    def get_service_url(self):
-        #TODO: Use domain.ip_address here:
-        return u"{0}://{1}:{2}/".format(service.get_protocol_display().lower(), "192.168.0.1", service.port)
+    def url(self):
+        protocol = self.service.get_protocol_display().lower()
+        ip_address = self.domain.interface_set.all()[0].ip_address
+        return u"{0}://{1}:{2}/".format(protocol,
+                                        ip_address,
+                                        self.service.port)
+
+    def external_url(self):
+        protocol = self.service.get_protocol_display().lower()
+        #TODO: Parse iptables and find out host port forwarding
+        forwarding_port = 8080
+        return u"{0}://{1}:{2}/".format(protocol, socket.getfqdn(), forwarding_port)
+
+    def update(self, save=True):
+        try:
+            response = urllib2.urlopen(self.url())
+            self.running = response.getcode() is 200
+        except (urllib2.HTTPError, urllib2.URLError):
+            self.running = False
+        if save:
+            self.save()

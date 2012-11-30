@@ -1,6 +1,6 @@
 {% with service=allocation.service %}
   {% if allocation.running %}
-    <a href="{{ service.get_url }}" rel="tooltip" title="{{ service.description }}">{{ service.name }}</a>
+    <a href="{{ allocation.external_url }}" rel="tooltip" title="{{ service.description }}">{{ service.name }}</a>
   {% else %}
     <span rel="tooltip" title="{{ service.description }}">{{ service.name }}</span>
   {% endif %}
