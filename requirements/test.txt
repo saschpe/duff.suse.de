@@ -5,3 +5,4 @@ django-nose==0.1.3
 mock==0.8.0
 #nosexcover==1.0.7
 #selenium==TODO
+tox

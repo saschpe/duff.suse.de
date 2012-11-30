@@ -6,3 +6,5 @@ log/*.log
 .*.sw?
 *.pyc
 *.vim
+.tox
+*.egg-info
