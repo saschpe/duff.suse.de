@@ -1,5 +1,5 @@
 # requirements/common.txt
-Django==1.4
+Django==2.2.28
 #django-cache-machine==0.6
 #django-celery==2.5.5
 #django-dajaxice==0.2
